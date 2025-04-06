@@ -22,10 +22,11 @@
 				"schema": {
 				  "type": "object",
 				  "properties": {
+					"alias": { "type": "string" },
 					"email": { "type": "string" },
 					"password": { "type": "string" }
 				  },
-				  "required": ["email", "password"]
+				  "required": ["alias", "email", "password"]
 				}
 			  }
 			}

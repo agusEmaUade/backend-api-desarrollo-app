@@ -74,7 +74,7 @@ const getUserByEmailAndPassword = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, alias, password } = req.body;
 
     const existingUser = await UserSerice.getUserByEmail(email);
     if (existingUser) {

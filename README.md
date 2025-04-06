@@ -35,7 +35,7 @@ JWT_EXPIRES_IN=1h
 
 ## Postman Collection
 
-La colección de Postman que cubre todos los endpoints de la API se puede encontrar en el siguiente [Enlace a Postman](https://documenter.getpostman.com/view/39583512/2sAYBYfVSy) .
+La colección de Postman que cubre todos los endpoints de la API se puede encontrar en el siguiente [Enlace a Postman](https://documenter.getpostman.com/view/39583512/2sB2cUCNto) .
 
 
 # Base de Datos
