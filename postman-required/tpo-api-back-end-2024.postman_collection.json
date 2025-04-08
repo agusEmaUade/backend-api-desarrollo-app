@@ -1,0 +1,1463 @@
+{
+	"info": {
+		"_postman_id": "4e36fff6-41af-461c-8337-5cfc1fcc4024",
+		"name": "tpo-api-back-end-2024",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39273293"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Test User Connection",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/users",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "borrar",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "borrar@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Hola1234",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/users/registration",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"registration"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LogIn User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"pm.environment.set(\"token\", jsonData.loginUser.token);\r",
+									"pm.environment.set(\"logedInUserID\", jsonData.loginUser.user._id);\r",
+									"pm.environment.set(\"logedInUserName\", jsonData.loginUser.user.name);\r",
+									"pm.environment.set(\"logedInUserMail\", jsonData.loginUser.user.email);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\"email\" : \"facu@gmail.com\",\r\n\"password\" : \"Hola1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/users/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Facundo Carrizo",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "facundocarrizo99@gmail.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "Hola1234",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/users/users",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"pm.environment.set(\"token\", jsonData.loginUser.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Facundo Carrizo",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "facundocarrizo99@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Hola1234",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/users/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\" : \"{{logedInUserID}}\",\r\n    \"name\" : \"{{logedInUserName}}\",\r\n    \"email\" : \"facu@gmail.com\",\r\n    \"password\" : \"Hola1234\",\r\n    \"picture\": \"UNAFOTO\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/users/update?x-access-token={{token}}",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"update"
+							],
+							"query": [
+								{
+									"key": "x-access-token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\" : \"{{logedInUserID}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/users/delete",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Groups",
+			"item": [
+				{
+					"name": "Tickets",
+					"item": [
+						{
+							"name": "Create Ticket",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = pm.response.json();\r",
+											"pm.environment.set(\"ticketID\", jsonData.createdTicket._id);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "{{groupID}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "674281e97b4cac86d4ede52b",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\" : \"Carne y carbon\",\r\n    \"description\" : \"vacio\",\r\n    \"owner\": \"facu@gmail.com\",\r\n    \"participants\": [\"facu@gmail.com\", \"santi@gmail.com\"],\r\n    \"amount\": 1000.65\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/groups/createTicket",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"groups",
+										"createTicket"
+									],
+									"query": [
+										{
+											"key": "x-access-token",
+											"value": "{{token}}",
+											"disabled": true
+										},
+										{
+											"key": "groupid",
+											"value": "{{groupID}}",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "All Tickets from Group",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = pm.response.json();\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "{{groupID}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "67425ef2a72e3f2bb60125b1",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/groups/group/tickets",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"groups",
+										"group",
+										"tickets"
+									],
+									"query": [
+										{
+											"key": "x-access-token",
+											"value": "{{token}}",
+											"disabled": true
+										},
+										{
+											"key": "groupid",
+											"value": "{{groupID}}",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Ticket",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = pm.response.json();\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "{{groupID}}",
+										"type": "text"
+									},
+									{
+										"key": "ticketid",
+										"value": "{{ticketID}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\" : \"ASADO de Domingo\",\r\n    \"description\" : \"update un ticket\",\r\n    \"owner\": \"facu@gmail.com\",\r\n    \"participants\": [\"facu@gmail.com\", \"juan@gmail.com\"],\r\n    \"amount\": 200\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/groups/updateTicket",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"groups",
+										"updateTicket"
+									],
+									"query": [
+										{
+											"key": "x-access-token",
+											"value": "{{token}}",
+											"disabled": true
+										},
+										{
+											"key": "groupid",
+											"value": "{{groupID}}",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Ticket",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = pm.response.json();\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "{{groupID}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "67425ef2a72e3f2bb60125b1",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"ticketid\" : \"{{ticketID}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/groups/deleteTicket",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"groups",
+										"deleteTicket"
+									],
+									"query": [
+										{
+											"key": "x-access-token",
+											"value": "{{token}}",
+											"disabled": true
+										},
+										{
+											"key": "groupid",
+											"value": "{{groupID}}",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Arreglos",
+					"item": [
+						{
+							"name": "Create Arreglo",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = pm.response.json();\r",
+											"pm.environment.set(\"arregloID\", jsonData.createdArreglo._id);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "{{groupID}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "674281e97b4cac86d4ede52b",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\" : \"otro pago\",\r\n    \"description\" : \"Papa y cebolla\",\r\n    \"payer\": \"facu@gmail.com\",\r\n    \"receiver\": \"santi@gmail.com\",\r\n    \"amount\": 1000.65\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/groups/createArreglo",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"groups",
+										"createArreglo"
+									],
+									"query": [
+										{
+											"key": "x-access-token",
+											"value": "{{token}}",
+											"disabled": true
+										},
+										{
+											"key": "groupid",
+											"value": "{{groupID}}",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "All Arreglos from Group",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = pm.response.json();\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "{{groupID}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "67425ef2a72e3f2bb60125b1",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/groups/group/arreglos",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"groups",
+										"group",
+										"arreglos"
+									],
+									"query": [
+										{
+											"key": "x-access-token",
+											"value": "{{token}}",
+											"disabled": true
+										},
+										{
+											"key": "groupid",
+											"value": "{{groupID}}",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Arreglo",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = pm.response.json();\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "{{groupID}}",
+										"type": "text"
+									},
+									{
+										"key": "arregloid",
+										"value": "{{arregloID}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\" : \"Otro pago\",\r\n    \"description\" : \"Papa y cebolla\",\r\n    \"payer\": \"facu@gmail.com\",\r\n    \"receiver\": \"santi@gmail.com\",\r\n    \"amount\": 1000.65\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/groups/updateArreglo",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"groups",
+										"updateArreglo"
+									],
+									"query": [
+										{
+											"key": "x-access-token",
+											"value": "{{token}}",
+											"disabled": true
+										},
+										{
+											"key": "groupid",
+											"value": "{{groupID}}",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Arreglo",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let jsonData = pm.response.json();\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "x-access-token",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "{{groupID}}",
+										"type": "text"
+									},
+									{
+										"key": "groupid",
+										"value": "67425ef2a72e3f2bb60125b1",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"arregloid\" : \"{{arregloID}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/groups/deleteArreglo",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"groups",
+										"deleteArreglo"
+									],
+									"query": [
+										{
+											"key": "x-access-token",
+											"value": "{{token}}",
+											"disabled": true
+										},
+										{
+											"key": "groupid",
+											"value": "{{groupID}}",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Test Group Connection",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Facundo Carrizo",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "facundocarrizo99@gmail.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "Hola1234",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/groups",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"groups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"pm.environment.set(\"groupID\", jsonData.createdGroup._id);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"Grupo 5\",\r\n    \"description\" : \"Nuevo OTRO grupo\",\r\n    \"participants\" : [\"santi@gmail.com\"]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/groups/create",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"groups",
+								"create"
+							],
+							"query": [
+								{
+									"key": "x-access-token",
+									"value": "{{token}}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Groups from User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/groups/myGroups",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"groups",
+								"myGroups"
+							],
+							"query": [
+								{
+									"key": "x-access-token",
+									"value": "{{token}}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "One Group from User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"pm.environment.set(\"groupID\", jsonData.data._id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"groupid\" : \"674281e97b4cac86d4ede52b\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/groups/groupByID",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"groups",
+								"groupByID"
+							],
+							"query": [
+								{
+									"key": "x-access-token",
+									"value": "{{token}}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Group By ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "groupid",
+								"value": "{{groupID}}",
+								"type": "text"
+							},
+							{
+								"key": "groupid",
+								"value": "67425ef2a72e3f2bb60125b1",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\" : \"ORTO ASADO\",\r\n    \"description\" : \"update del asado\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/groups/update",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"groups",
+								"update"
+							],
+							"query": [
+								{
+									"key": "x-access-token",
+									"value": "{{token}}",
+									"disabled": true
+								},
+								{
+									"key": "groupid",
+									"value": "{{groupID}}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "groupid",
+								"value": "{{groupID}}",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "groupid",
+								"value": "6742ad53c3268c7c74a6e920",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/groups/delete",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"groups",
+								"delete"
+							],
+							"query": [
+								{
+									"key": "x-access-token",
+									"value": "{{token}}",
+									"disabled": true
+								},
+								{
+									"key": "groupid",
+									"value": "{{groupID}}",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test Api Connection",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
