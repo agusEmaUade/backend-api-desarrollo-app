@@ -19,25 +19,5 @@ const ComentarioSchema = new mongoose.Schema({
 ComentarioSchema.plugin(mongoosePaginate)
 module.exports = mongoose.model('Comentario', ComentarioSchema);
 
-//TODO:
-// + ABM recetas
-// + ABM ingredientes
-// + ABM Comentarios
-// + ABM pasos
-// + Filtrar Por ingrediente / filtrar por no ingrediente
-// + Filtrar por tags
-// + Filtrar por usuario
-// + Get todos los nombres de recetas
-// + Get todos los nombres ingredientes
-
-
-//TODO - COMENTARIO:
-// - ObjectID
-// - Texto
-// - Valoracion (1-5)
-// - Usuario -> Usuario
-// - Receta -> Receta
-// - Fecha de creacion
-// - Aprobado (boolean)
 
 

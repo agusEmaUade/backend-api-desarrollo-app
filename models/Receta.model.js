@@ -36,18 +36,3 @@ RecetaSchema.plugin(mongoosePaginate)
 module.exports = mongoose.model('Receta', RecetaSchema);
 
 
-//TODO - RECETA:
-// - ObjectID
-// - Titulo
-// - Descripcion
-// - Ingredientes (Array)
-// - Pasos (Array) -> Paso
-// - CantidadComensales (Numero)
-// - Tags (Array) -> Tag (ENUM)*
-// - Imagen (URL)
-// - Autor -> Usuario
-// - Fecha de creacion
-// - Fecha de modificacion
-// - Aprobado (boolean)
-// - ValoracionPromedio (1-5)
-// - Comentarios (Array) -> Comentario

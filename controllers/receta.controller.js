@@ -111,4 +111,10 @@ module.exports = {
     obtenerRecetaPorId,
     actualizarReceta,
     eliminarReceta,
+    filtrarPorIngrediente,
+    filtrarPorNoIngrediente,
+    filtrarPorTags,
+    filtrarPorUsuario,
+    getNombresRecetas,
+    getNombresIngredientes
 };

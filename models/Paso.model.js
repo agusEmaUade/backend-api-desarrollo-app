@@ -12,9 +12,3 @@ const PasoSchema = new mongoose.Schema({
 PasoSchema.plugin(mongoosePaginate)
 module.exports = mongoose.model('Paso', PasoSchema);
 
-//TODO - PASO:
-// - ObjectID
-// - Texto
-// - Imagen (URL) - optativa
-// - Receta -> Receta
-// - NumeroDePaso (Numero)

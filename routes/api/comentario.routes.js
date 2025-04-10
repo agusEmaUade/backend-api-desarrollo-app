@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const comentarioController = require('../controllers/comentario.controller');
+const comentarioController = require('../../controllers/comentario.controller');
 
 // ABM Comentarios
 router.post('/', comentarioController.crearComentario);

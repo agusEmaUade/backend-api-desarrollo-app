@@ -1,5 +1,8 @@
 /**ROUTE USER APIs. */
 var express = require('express')
+const app = express();
+
+app.use(express.json());
 
 var router = express.Router()
 

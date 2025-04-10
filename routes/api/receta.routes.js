@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const recetaController = require('../controllers/receta.controller');
+const recetaController = require('../../controllers/receta.controller');
 
 // ABM Recetas
 router.post('/', recetaController.crearReceta);

@@ -2,6 +2,7 @@
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var bluebird = require('bluebird');
+const dotenv = require("dotenv");
 
 //incorporo cors
 var cors = require('cors');
@@ -38,10 +39,11 @@ if (process.env.NODE_ENV === 'Development') {
   require('./config').config();
 }
 
+dotenv.config();
 //Database connection --
 var mongoose = require('mongoose')
 mongoose.Promise = bluebird;
-let url = 'mongodb+srv://faccarrizo:tfbB6e8v1u8ZBLI1@cluster0.hjsieb8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'//`${process.env.DATABASE1}${process.env.DATABASE2}=${process.env.DATABASE3}=${process.env.DATABASE4}`
+let url = `${process.env.DATABASE1}${process.env.DATABASE2}=${process.env.DATABASE3}=${process.env.DATABASE4}`
 console.log("BD",url);
 let opts = {
   useNewUrlParser : true,
