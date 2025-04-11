@@ -1,17 +1,20 @@
 /**ROUTE USER APIs. */
 var express = require('express')
-const app = express();
-
-app.use(express.json());
 
 var router = express.Router()
 
+const userRoutes = require('../routes/api/user.route');
 const recetaRoutes = require('../routes/api/receta.routes');
 const pasoRoutes = require('../routes/api/paso.routes');
 const comentarioRoutes = require('../routes/api/comentario.routes');
 
-app.use('/api/recetas', recetaRoutes);
-app.use('/api/pasos', pasoRoutes);
-app.use('/api/comentarios', comentarioRoutes);
+router.use('/user', userRoutes);
+router.use('/recetas', recetaRoutes);
+router.use('/pasos', pasoRoutes);
+router.use('/comentarios', comentarioRoutes);
+
+router.get('/', function(req, res, next) {
+    res.send('api esta escuchando');
+});
 
 module.exports = router;

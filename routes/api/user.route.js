@@ -1,25 +1,22 @@
-var express = require('express')
-var router = express.Router()
-var UserController = require('../../controllers/users.controller');
-var Authorization = require('../../auth/authorization');
+const express = require('express');
+const router = express.Router();
+const UserController = require('../../controllers/users.controller');
+const {body, check} = require('express-validator');
+const validateRequest = require('../../auth/request_validator');
+const authenticateToken = require('../../auth/authorization');
 
+router.get('/', UserController.getUsers);
+router.post('/',
+    [
+        check("email").not().isEmpty(),
+        check("password").not().isEmpty(),
+        validateRequest,
+    ],
+    UserController.createUser);
+router.post('/existe', authenticateToken, UserController.existeUser);
+router.get('/:id', authenticateToken, UserController.getUserById);
+router.patch('/:id/email', authenticateToken, UserController.updateUserEmailById);
+router.patch('/:id/password', authenticateToken, UserController.updateUserPasswordById);
 
-// Authorize each API with middleware and map to the Controller Functions
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-    res.send('Llegaste a la ruta de  api/user.routes');
-  });
-router.post('/registration', UserController.createUser) //http://localhost:3000/api/users/registration
-router.post('/login/', UserController.loginUser)
-router.post('/recoverPassword/', UserController.recoverPassword)
-router.get('/users',Authorization, UserController.getUsers)
-router.post('/userByMail', Authorization, UserController.getUsersByMail)
-router.put('/update', Authorization, UserController.updateUser)
-router.delete('/delete', Authorization, UserController.removeUser)
-
-
-
-// Export the Router
 module.exports = router;
-
 
