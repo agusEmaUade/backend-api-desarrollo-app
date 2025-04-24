@@ -1,3 +1,14 @@
+# Integrantes
+
+| Legajo   | Nombre completo             |
+|----------|-----------------------------|
+| 1116155  | Amed, Maria Agustina        |
+| 1185379  | Carrizo, Facundo Martin     |
+| 1170887  | Yáñez, Agustin              |
+| 94108    | Claros, Jose Luis           |
+
+---
+
 # Aplicación Backend en Node.js con Express
 
 Esta es una aplicación backend desarrollada en **Node.js** utilizando el framework **Express**. Está diseñada para gestionar diversos aspectos de la administración de receta, incluyendo el registro de usuarios, gestión de recetas, y más.
@@ -36,9 +47,9 @@ RESEND_API_KEY=xx
 
 ```
 
-## Postman Collection
+## Swagger
 
-La colección de Postman que cubre todos los endpoints de la API se puede encontrar en el siguiente [Enlace a Postman](https://documenter.getpostman.com/view/39583512/2sB2cUCNto) .
+Endpoints de la [API](https://app.swaggerhub.com/apis/desarrolloapi/UADE/1.0.0) .
 
 
 # Base de Datos
