@@ -10,13 +10,19 @@ La aplicación integra servicios de envío de correos electrónicos mediante **R
 Este proyecto requiere un archivo .env configurado para el entorno de desarrollo. La estructura del archivo debe ser la siguiente:
 
 ```bash
-PORT=8080
-NODE_ENV=develope
 
-# ---------------DB--------------------------
-DEV_DB_USERNAME=root
-DEV_DB_PASSWORD=xxx
-DEV_DB_NAME=administrando
+SECRET=supersecret
+DATABASE1=mongodb+srv://xxxx@cluster0.hjsieb8.mongodb.net/
+DATABASE2=faccarrizo?retryWrites
+DATABASE3=true&w
+DATABASE4=majority
+HOST=127.0.0.1
+PORT=4000
+DATABASE_NAME=Cluster0
+
+# ---------------JWT--------------------------
+JWT_SECRET=QWS12
+JWT_EXPIRES_IN=1h
 
 # ---------------IMAGE_HOSTING--------------------------
 CLOUD_NAME=xx
@@ -27,9 +33,6 @@ CLOUDINARY_SECRET=xx
 # Resend
 RESEND_API_KEY=xx
 
-# ---------------JWT--------------------------
-JWT_SECRET=QWS12
-JWT_EXPIRES_IN=1h
 
 ```
 
