@@ -9,6 +9,13 @@
 
 ---
 
+# Documento
+
+
+Entrega de dieseño con los prototipos [link](https://docs.google.com/document/d/1bSAWG5i4eog7P7Ic70Igrkrjt7FfLNoo/edit)
+
+---
+
 # Aplicación Backend en Node.js con Express
 
 Esta es una aplicación backend desarrollada en **Node.js** utilizando el framework **Express**. Está diseñada para gestionar diversos aspectos de la administración de receta, incluyendo el registro de usuarios, gestión de recetas, y más.
