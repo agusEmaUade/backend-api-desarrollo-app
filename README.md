@@ -10,13 +10,19 @@ La aplicación integra servicios de envío de correos electrónicos mediante **R
 Este proyecto requiere un archivo .env configurado para el entorno de desarrollo. La estructura del archivo debe ser la siguiente:
 
 ```bash
-PORT=8080
-NODE_ENV=develope
 
-# ---------------DB--------------------------
-DEV_DB_USERNAME=root
-DEV_DB_PASSWORD=xxx
-DEV_DB_NAME=administrando
+SECRET=supersecret
+DATABASE1=mongodb+srv://xxxx@cluster0.hjsieb8.mongodb.net/
+DATABASE2=faccarrizo?retryWrites
+DATABASE3=true&w
+DATABASE4=majority
+HOST=127.0.0.1
+PORT=4000
+DATABASE_NAME=Cluster0
+
+# ---------------JWT--------------------------
+JWT_SECRET=QWS12
+JWT_EXPIRES_IN=1h
 
 # ---------------IMAGE_HOSTING--------------------------
 CLOUD_NAME=xx
@@ -27,9 +33,6 @@ CLOUDINARY_SECRET=xx
 # Resend
 RESEND_API_KEY=xx
 
-# ---------------JWT--------------------------
-JWT_SECRET=QWS12
-JWT_EXPIRES_IN=1h
 
 ```
 
@@ -49,10 +52,54 @@ Este proyecto utiliza un esquema relacional con las siguientes tablas: **Usuario
 ### **Usuarios**
 Contiene la información de los usuarios registrados en el sistema.
 
-- `id` (PK): Identificador único.
-- `email`: Correo electrónico del usuario.
-- `alias`: Identificador del usuario.
-- `password`: Contraseña del usuario.
+- `id` (PK): Identificador único.  
+- `name`: Nombre del usuario.  
+- `email`: Correo electrónico del usuario.  
+- `alias`: Identificador del usuario.  
+- `password`: Contraseña del usuario.  
+- `date`: Fecha de registro del usuario.  
+
+
+### **Recetas**
+Contiene la información de las recetas creadas por los usuarios.
+
+- `id` (PK): Identificador único.  
+- `titulo`: Título de la receta.  
+- `descripcion`: Descripción de la receta.  
+- `ingredientes`: Lista de ingredientes con cantidad y unidad de medida.  
+- `pasos`: Referencias a pasos asociados.  
+- `cantidadComensales`: Cantidad de personas que alcanza la receta.  
+- `tags`: Etiquetas categóricas (ej. Vegano, SinGluten).  
+- `imagen`: URL de la imagen principal.  
+- `autor`: Referencia al usuario creador.  
+- `fechaCreacion`: Fecha de creación.  
+- `fechaModificacion`: Fecha de última modificación.  
+- `aprobado`: Indica si está aprobada.  
+- `valoracionPromedio`: Valoración promedio de usuarios.  
+- `comentarios`: Referencias a comentarios asociados.  
+
+
+### **Comentarios**
+Contiene las valoraciones y opiniones sobre las recetas.
+
+- `id` (PK): Identificador único.  
+- `texto`: Texto del comentario.  
+- `valoracion`: Puntuación del 1 al 5.  
+- `usuario`: Referencia al usuario que comentó.  
+- `receta`: Referencia a la receta comentada.  
+- `fechaCreacion`: Fecha en la que se hizo el comentario.  
+- `aprobado`: Indica si el comentario está aprobado.  
+
+
+### **Pasos**
+Contiene los pasos individuales para realizar una receta.
+
+- `id` (PK): Identificador único.  
+- `texto`: Descripción del paso.  
+- `imagen`: URL de imagen ilustrativa (opcional).  
+- `receta`: Referencia a la receta a la que pertenece.  
+- `numeroDePaso`: Orden del paso en la receta.  
+
 
 
 
@@ -61,11 +108,49 @@ Contiene la información de los usuarios registrados en el sistema.
 ```mermaid
 erDiagram
     Usuario {
-        INT id PK
+        STRING id PK
+        STRING name
         STRING email
         STRING alias
         STRING password
+        DATE date
     }
+
+    Receta {
+        STRING id PK
+        STRING titulo
+        STRING descripcion
+        STRING[] ingredientes
+        NUMBER cantidadComensales
+        STRING[] tags
+        STRING imagen
+        DATE fechaCreacion
+        DATE fechaModificacion
+        BOOLEAN aprobado
+        NUMBER valoracionPromedio
+    }
+
+    Comentario {
+        STRING id PK
+        STRING texto
+        NUMBER valoracion
+        DATE fechaCreacion
+        BOOLEAN aprobado
+    }
+
+    Paso {
+        STRING id PK
+        STRING texto
+        STRING imagen
+        NUMBER numeroDePaso
+    }
+
+    Usuario ||--o{ Receta : autor
+    Usuario ||--o{ Comentario : escribe
+    Receta ||--o{ Comentario : recibe
+    Receta ||--o{ Paso : contiene
+    Comentario }o--|| Receta : comenta
+
 ```
 ---
 ## **Diagrama de Arquitectura**
