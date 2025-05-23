@@ -76,12 +76,12 @@ const createUser = async (req, res) => {
     try {
         const { email, alias, password } = req.body;
 
-        const existingUser = await UserService.getUserByEmail(email);
-        if (existingUser) {
-            return res.status(400).json({
-                message: "Email already exists",
-            });
-        }
+        // const existingUser = await UserService.getUserByEmail(email);
+        // if (existingUser) {
+        //     return res.status(400).json({
+        //         message: "Email already exists",
+        //     });
+        // }
         // Encriptar la contraseña
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
