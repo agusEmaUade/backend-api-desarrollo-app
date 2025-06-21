@@ -1,22 +1,45 @@
 const express = require('express');
 const router = express.Router();
 const recetaController = require('../../controllers/receta.controller');
+const {check} = require('express-validator');
+const validateRequest = require('../../auth/request_validator');
+const {authenticateToken} = require('../../auth/authorization');
 
-// ABM Recetas
-router.post('/', recetaController.crearReceta);
-router.get('/', recetaController.obtenerRecetas);
-router.get('/:id', recetaController.obtenerRecetaPorId);
-router.put('/:id', recetaController.actualizarReceta);
-router.delete('/:id', recetaController.eliminarReceta);
+// Public routes
+router.get('/recipes', recetaController.obtenerRecetas);
+router.get('/recipes/:id', recetaController.obtenerRecetaPorId);
 
-// Filtros
-router.get('/filtro/ingrediente', recetaController.filtrarPorIngrediente);
-router.get('/filtro/no-ingrediente', recetaController.filtrarPorNoIngrediente);
-router.get('/filtro/tags', recetaController.filtrarPorTags);
-router.get('/filtro/usuario', recetaController.filtrarPorUsuario);
+// Filtering routes
+router.get('/recipes/ingredient/:ingredienteId', recetaController.filtrarPorIngrediente);
+router.get('/recipes/not-ingredient/:ingredienteId', recetaController.filtrarPorNoIngrediente);
+router.get('/recipes/tags', recetaController.filtrarPorTags);
+router.get('/recipes/user/:usuarioId', recetaController.filtrarPorUsuario);
 
-// Listados
-router.get('/list/nombres', recetaController.getNombresRecetas);
-router.get('/list/ingredientes', recetaController.getNombresIngredientes);
+// Utility routes
+router.get('/recipes/names', recetaController.getNombresRecetas);
+router.get('/ingredients/names', recetaController.getNombresIngredientes);
+
+// Protected routes (require authentication)
+router.post('/recipes', [
+    authenticateToken,
+    check('titulo').notEmpty(),
+    check('ingredientes').isArray({min: 1}),
+    check('pasos').isArray({min: 1}),
+    check('tiempoPreparacion').isNumeric(),
+    check('tiempoCoccion').isNumeric(),
+    check('porciones').isNumeric(),
+    check('dificultad').isIn(['facil', 'medio', 'dificil']),
+    validateRequest
+], recetaController.crearReceta);
+
+router.put('/recipes/:id', [
+    authenticateToken,
+    check('titulo').optional().notEmpty(),
+    check('ingredientes').optional().isArray({min: 1}),
+    check('pasos').optional().isArray({min: 1}),
+    validateRequest
+], recetaController.actualizarReceta);
+
+router.delete('/recipes/:id', authenticateToken, recetaController.eliminarReceta);
 
 module.exports = router;

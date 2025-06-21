@@ -1,73 +1,336 @@
-const UserService = require("../services/user.service");
-const MailService = require("../services/mail");
-const fs = require("fs");
-const path = require("path");
-const handlebars = require("handlebars");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-const dotenv = require("dotenv");
+const User = require('../models/User.model');
+const Recipe = require('../models/Recipe.model');
+const { isBase64Image, validateImageSize } = require('../utils/imageUtils');
+const AppError = require('../utils/AppError');
 
-dotenv.config();
+// Filter out fields that are not allowed to be updated
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+  return newObj;
+};
 
-const getUsers = async (req, res) => {
+// Get all users (admin only)
+const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({
+      status: 'success',
+      results: users.length,
+      data: {
+        users,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Get current user profile
+const getMe = async (req, res) => {
     try {
-        const users = await UserService.getUsers();
-        res.status(200).json(users);
+        // The user is already attached to req.user by the auth middleware
+        const user = await User.findById(req.user._id);
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                user
+            }
+        });
     } catch (err) {
         res.status(500).json({
-            message: err.message,
+            status: 'error',
+            message: 'Error fetching user profile'
         });
     }
 };
 
-const getUserById = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const user = await UserService.getUserById(Number(id));
-        if (!user)
-            res.status(404).json({
-                message: "Not Found!",
-            });
-
-        res.status(200).json(user);
-    } catch (err) {
-        res.status(500).json({
-            message: err.message,
-        });
+// Update current user profile
+const updateMe = async (req, res, next) => {
+  try {
+    // 1) Create error if user POSTs password data
+    if (req.body.password || req.body.passwordConfirm) {
+      return next(
+        new AppError(
+          'This route is not for password updates. Please use /updateMyPassword.',
+          400
+        )
+      );
     }
+
+    // 2) Filtered out unwanted fields names that are not allowed to be updated
+    const filteredBody = filterObj(req.body, 'name', 'email');
+    
+    // 3) If avatar is provided, validate it
+    if (req.body.avatar) {
+      if (!isBase64Image(req.body.avatar)) {
+        return next(new AppError('Invalid image format. Please provide a valid base64 image.', 400));
+      }
+      
+      if (!validateImageSize(req.body.avatar)) {
+        return next(new AppError('Image size is too large. Maximum size is 500KB.', 400));
+      }
+      
+      filteredBody.avatar = req.body.avatar;
+    }
+
+    // 4) Update user document
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: updatedUser,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
-const getUserByEmailAndPassword = async (req, res) => {
-    const { email, password } = req.body;
+// Delete current user (set active to false)
+const deleteMe = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.user.id, { active: false });
 
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Get user by ID (admin only)
+const getUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.params.id);
+    
+    if (!user) {
+      return next(new AppError('No user found with that ID', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Update user (admin only)
+const updateUser = async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!user) {
+      return next(new AppError('No user found with that ID', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Delete user (admin only)
+const deleteUser = async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+
+    if (!user) {
+      return next(new AppError('No user found with that ID', 404));
+    }
+
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Update user avatar
+const updateAvatar = async (req, res, next) => {
+  try {
+    const { avatar } = req.body;
+    
+    if (!avatar) {
+      return next(new AppError('Please provide an image', 400));
+    }
+    
+    if (!isBase64Image(avatar)) {
+      return next(new AppError('Invalid image format. Please provide a valid base64 image.', 400));
+    }
+    
+    if (!validateImageSize(avatar)) {
+      return next(new AppError('Image size is too large. Maximum size is 500KB.', 400));
+    }
+    
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { avatar },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+    
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Get user favorites
+const getFavorites = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id).populate('favorites');
+    
+    res.status(200).json({
+      status: 'success',
+      results: user.favorites.length,
+      data: {
+        favorites: user.favorites,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Add recipe to favorites
+const addFavorite = async (req, res, next) => {
+  try {
+    const { recipeId } = req.params;
+    
+    // Check if recipe exists
+    const recipe = await Recipe.findById(recipeId);
+    if (!recipe) {
+      return next(new AppError('No recipe found with that ID', 404));
+    }
+    
+    // Check if already favorited
+    const user = await User.findById(req.user.id);
+    if (user.favorites.includes(recipeId)) {
+      return next(new AppError('Recipe already in favorites', 400));
+    }
+    
+    // Add to favorites
+    user.favorites.push(recipeId);
+    await user.save({ validateBeforeSave: false });
+    
+    res.status(200).json({
+      status: 'success',
+      message: 'Recipe added to favorites',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Remove recipe from favorites
+const removeFavorite = async (req, res, next) => {
+  try {
+    const { recipeId } = req.params;
+    
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      { $pull: { favorites: recipeId } },
+      { new: true }
+    );
+    
+    if (!user) {
+      return next(new AppError('No user found with that ID', 404));
+    }
+    
+    res.status(200).json({
+      status: 'success',
+      message: 'Recipe removed from favorites',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// @desc    Login user
+// @route   POST /api/auth/login
+// @access  Public
+const login = async (req, res) => {
     try {
-        const user = await UserService.getUserByEmail(String(email));
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found",
+        const { email, password } = req.body;
+
+        // 1) Check if email and password exist
+        if (!email || !password) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Please provide email and password'
             });
         }
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
+        // 2) Check if user exists && password is correct
+        const user = await User.findOne({ email }).select('+password');
+        
+        if (!user || !(await user.correctPassword(password, user.password))) {
             return res.status(401).json({
-                message: "Invalid email or password",
+                status: 'error',
+                message: 'Incorrect email or password'
             });
         }
 
-        // Generar el token JWT
+        // 3) Generate tokens
         const token = jwt.sign(
-            { id: user.id, email: user.email },
+            { id: user._id },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN }
         );
 
-        // Responder con el token
-        res.status(200).json({ token });
+        const refreshToken = jwt.sign(
+            { id: user._id },
+            process.env.JWT_REFRESH_SECRET,
+            { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN }
+        );
+
+        // 4) Remove sensitive data
+        user.password = undefined;
+
+        // 5) Send response
+        res.status(200).json({
+            status: 'success',
+            token,
+            refreshToken,
+            data: { user }
+        });
+
     } catch (err) {
-        console.error("Error in login:", err.message);
+        console.error('Login error:', err);
         res.status(500).json({
-            message: "Internal server error",
+            status: 'error',
+            message: 'Something went wrong'
         });
     }
 };
@@ -256,12 +519,21 @@ const existeUser =  async (req, res) => {
 };
 
 module.exports = {
-    getUsers,
     createUser,
-    getUserById,
-    getUserByEmailAndPassword,
+    getMe,
+    updateMe,
+    updateAvatar,
+    deleteMe,
+    getUser,
+    login,
+    updateUser,
+    deleteUser,
+    getFavorites,
+    addFavorite,
+    removeFavorite,
     updateUserPasswordById,
     updateUserEmailById,
     recoverPassword,
-    existeUser
+    existeUser,
+    getAllUsers
 };

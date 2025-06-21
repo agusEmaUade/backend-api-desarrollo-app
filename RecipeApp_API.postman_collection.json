@@ -1,0 +1,504 @@
+{
+  "info": {
+    "name": "Recipe App API",
+    "description": "API for managing recipes, users, and authentication",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Authentication endpoints",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"passwordConfirm\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{refresh_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/refresh-token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "refresh-token"]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/forgot-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "forgot-password"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"newpassword123\",\n  \"passwordConfirm\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/reset-password/:token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "reset-password", ":token"],
+              "variable": [
+                {
+                  "key": "token",
+                  "value": "reset_token_here"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "User management endpoints",
+      "item": [
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update Current User",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Name\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update Avatar",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"avatar\": \"base64_encoded_image_here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/update-avatar",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "update-avatar"]
+            }
+          }
+        },
+        {
+          "name": "Update Password",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"oldpassword123\",\n  \"password\": \"newpassword123\",\n  \"passwordConfirm\": \"newpassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/update-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "update-password"]
+            }
+          }
+        },
+        {
+          "name": "Get Favorites",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/me/favorites",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me", "favorites"]
+            }
+          }
+        },
+        {
+          "name": "Add Favorite",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/me/favorites/:recipeId",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me", "favorites", ":recipeId"],
+              "variable": [
+                {
+                  "key": "recipeId",
+                  "value": "recipe_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Remove Favorite",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/me/favorites/:recipeId",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me", "favorites", ":recipeId"],
+              "variable": [
+                {
+                  "key": "recipeId",
+                  "value": "recipe_id_here"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Recipes",
+      "description": "Recipe management endpoints",
+      "item": [
+        {
+          "name": "Get All Recipes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/recipes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes"]
+            }
+          }
+        },
+        {
+          "name": "Get Recipe by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/recipes/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "recipe_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Ingredient",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/recipes/ingredient/:ingredienteId",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", "ingredient", ":ingredienteId"],
+              "variable": [
+                {
+                  "key": "ingredienteId",
+                  "value": "ingredient_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Excluding Ingredient",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/recipes/not-ingredient/:ingredienteId",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", "not-ingredient", ":ingredienteId"],
+              "variable": [
+                {
+                  "key": "ingredienteId",
+                  "value": "ingredient_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by Tags",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/recipes/tags?tags=tag1,tag2",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", "tags"],
+              "query": [
+                {
+                  "key": "tags",
+                  "value": "tag1,tag2"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter by User",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/recipes/user/:usuarioId",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", "user", ":usuarioId"],
+              "variable": [
+                {
+                  "key": "usuarioId",
+                  "value": "user_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Recipe Names",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/recipes/names",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", "names"]
+            }
+          }
+        },
+        {
+          "name": "Get Ingredient Names",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/ingredients/names",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ingredients", "names"]
+            }
+          }
+        },
+        {
+          "name": "Create Recipe",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Nueva Receta\",\n  \"ingredientes\": [\n    {\n      \"nombre\": \"Ingrediente 1\",\n      \"cantidad\": 1,\n      \"unidad\": \"unidad\"\n    }\n  ],\n  \"pasos\": [\"Paso 1\", \"Paso 2\"],\n  \"tiempoPreparacion\": 30,\n  \"tiempoCoccion\": 45,\n  \"porciones\": 4,\n  \"dificultad\": \"medio\",\n  \"etiquetas\": [\"tag1\", \"tag2\"]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/recipes",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes"]
+            }
+          }
+        },
+        {
+          "name": "Update Recipe",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Receta Actualizada\",\n  \"porciones\": 6\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/recipes/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "recipe_id_here"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Recipe",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/recipes/:id",
+              "host": ["{{base_url}}"],
+              "path": ["api", "recipes", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "recipe_id_here"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "access_token",
+      "value": "your_access_token_here"
+    },
+    {
+      "key": "refresh_token",
+      "value": "your_refresh_token_here"
+    }
+  ]
+}
