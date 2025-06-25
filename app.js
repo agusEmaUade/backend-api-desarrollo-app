@@ -1,8 +1,12 @@
+const dotenv = require("dotenv");
+dotenv.config();
+
+
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
 //Express
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var bluebird = require('bluebird');
-const dotenv = require("dotenv");
 
 //incorporo cors
 var cors = require('cors');
@@ -39,11 +43,10 @@ if (process.env.NODE_ENV === 'Development') {
   require('./config').config();
 }
 
-dotenv.config();
 //Database connection --
 var mongoose = require('mongoose')
 mongoose.Promise = bluebird;
-let url = 'mongodb+srv://agyanez:9pcZ6Lnl2Y6xb31G@cluster0.hjsieb8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'//`${process.env.DATABASE1}${process.env.DATABASE2}=${process.env.DATABASE3}=${process.env.DATABASE4}`
+let url = 'mongodb+srv://faccarrizo:mrSMEindpoql4z4Q@cluster0.hjsieb8.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0'//`${process.env.DATABASE1}${process.env.DATABASE2}=${process.env.DATABASE3}=${process.env.DATABASE4}`
 console.log("BD",url);
 let opts = {
   useNewUrlParser : true,
