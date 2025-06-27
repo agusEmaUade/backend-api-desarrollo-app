@@ -104,7 +104,7 @@ exports.refreshToken = async (req, res, next) => {
     // 2) Verify refresh token
     const decoded = await promisify(jwt.verify)(
       refreshToken,
-      process.env.JWT_REFRESH_SECRET
+      process.env.JWT_SECRET
     );
 
     // 3) Check if user still exists
