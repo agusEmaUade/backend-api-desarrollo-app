@@ -2,22 +2,23 @@ const express = require('express');
 const router = express.Router();
 const recetaController = require('../../controllers/receta.controller');
 const {check} = require('express-validator');
-const validateRequest = require('../../auth/request_validator');
-const {authenticateToken} = require('../../auth/authorization');
+const validateRequest = require('../../middleware/requestValidator');
+const authenticateToken = require('../../middleware/authMiddleware');
+
 
 // Public routes
-router.get('/recipes', recetaController.obtenerRecetas);
-router.get('/recipes/:id', recetaController.obtenerRecetaPorId);
+router.get('/recipes', authenticateToken, recetaController.obtenerRecetas);
+router.get('/recipes/:id', authenticateToken, recetaController.obtenerRecetaPorId);
 
 // Filtering routes
-router.get('/recipes/ingredient/:ingredienteId', recetaController.filtrarPorIngrediente);
-router.get('/recipes/not-ingredient/:ingredienteId', recetaController.filtrarPorNoIngrediente);
-router.get('/recipes/tags', recetaController.filtrarPorTags);
-router.get('/recipes/user/:usuarioId', recetaController.filtrarPorUsuario);
+router.get('/recipes/ingredient/:ingredienteId', authenticateToken, recetaController.filtrarPorIngrediente);
+router.get('/recipes/not-ingredient/:ingredienteId', authenticateToken, recetaController.filtrarPorNoIngrediente);
+router.get('/recipes/tags', authenticateToken, recetaController.filtrarPorTags);
+router.get('/recipes/user/:usuarioId', authenticateToken, recetaController.filtrarPorUsuario);
 
 // Utility routes
-router.get('/recipes/names', recetaController.getNombresRecetas);
-router.get('/ingredients/names', recetaController.getNombresIngredientes);
+router.get('/recipes/names', authenticateToken, recetaController.getNombresRecetas);
+router.get('/ingredients/names', authenticateToken, recetaController.getNombresIngredientes);
 
 // Protected routes (require authentication)
 router.post('/recipes', [

@@ -4,7 +4,7 @@ const userController = require('../../controllers/users.controller');
 const authController = require('../../controllers/auth.controller');
 const {check} = require('express-validator');
 const validateRequest = require('../../middleware/requestValidator');
-const {login, restrictTo, authenticateToken} = require('../../auth/authorization');
+const authenticateToken = require('../../middleware/authMiddleware');
 
 // Auth routes
 router.post('/auth/register', [
@@ -43,11 +43,9 @@ router.patch('/auth/reset-password/:token', [
     validateRequest
 ], authController.resetPassword);
 
-// Protect all routes after this middleware
-router.use(login);
 
 // User routes
-router.get('/users/me', userController.getMe);
+router.get('/users/me', authenticateToken, userController.getMe);
 router.patch('/users/update-me', [
     check('name').optional().trim(),
     check('email').optional().isEmail().normalizeEmail(),
@@ -57,7 +55,7 @@ router.patch('/users/update-me', [
 router.patch('/users/update-avatar', [
     check('avatar').exists().withMessage('Please provide an image'),
     validateRequest
-], userController.updateAvatar);
+],  authenticateToken, userController.updateAvatar);
 
 router.patch('/users/update-password', [
     check('currentPassword').exists().withMessage('Please provide your current password'),
@@ -69,25 +67,19 @@ router.patch('/users/update-password', [
         return true;
     }),
     validateRequest
-], authController.updatePassword);
+], authenticateToken, authController.updatePassword);
 
 // Favorites routes
-router.get('/users/me/favorites', userController.getFavorites);
-router.post('/users/me/favorites/:recipeId', userController.addFavorite);
-router.delete('/users/me/favorites/:recipeId', userController.removeFavorite);
+router.get('/users/me/favorites',  authenticateToken, userController.getFavorites);
+router.post('/users/me/favorites/:recipeId',  authenticateToken, userController.addFavorite);
+router.delete('/users/me/favorites/:recipeId',  authenticateToken, userController.removeFavorite);
 
 // Admin routes
-router.use(restrictTo('admin'));
+//router.use(restrictTo('admin'));
 
-router.get('/admin/users', userController.getAllUsers);
-router.get('/admin/users/:id', userController.getUser);
-router.patch('/admin/users/:id', userController.updateUser);
-router.delete('/admin/users/:id', userController.deleteUser);
-
-
-// Favorites
-router.get('/users/me/favorites', authenticateToken, userController.getFavorites);
-router.post('/users/me/favorites/:recipeId', authenticateToken, userController.addFavorite);
-router.delete('/users/me/favorites/:recipeId', authenticateToken, userController.removeFavorite);
+router.get('/admin/users',  authenticateToken, userController.getAllUsers);
+router.get('/admin/users/:id',   authenticateToken, authenticateToken, userController.getUser);
+router.patch('/admin/users/:id',  authenticateToken, userController.updateUser);
+router.delete('/admin/users/:id',  authenticateToken, userController.deleteUser);
 
 module.exports = router;

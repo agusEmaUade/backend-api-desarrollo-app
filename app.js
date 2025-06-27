@@ -46,7 +46,7 @@ if (process.env.NODE_ENV === 'Development') {
 //Database connection --
 var mongoose = require('mongoose')
 mongoose.Promise = bluebird;
-let url = 'mongodb+srv://faccarrizo:mrSMEindpoql4z4Q@cluster0.hjsieb8.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0'//`${process.env.DATABASE1}${process.env.DATABASE2}=${process.env.DATABASE3}=${process.env.DATABASE4}`
+let url = process.env.URI_BD //'mongodb+srv://faccarrizo:mrSMEindpoql4z4Q@cluster0.hjsieb8.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0'//`${process.env.DATABASE1}${process.env.DATABASE2}=${process.env.DATABASE3}=${process.env.DATABASE4}`
 console.log("BD",url);
 let opts = {
   useNewUrlParser : true,
