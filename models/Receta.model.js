@@ -19,7 +19,7 @@ const RecetaSchema = new mongoose.Schema({
         enum: ['Vegetariano', 'Vegano', 'SinGluten', 'Dulce', 'Salado', 'Rapido', 'Internacional', 'Tradicional'] // agregá o cambiá según tu app
     }],
     imagen: {type: String}, // URL
-    autor: {type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true},
+    autor: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
     fechaCreacion: {type: Date, default: Date.now},
     fechaModificacion: {type: Date, default: Date.now},
     aprobado: {type: Boolean, default: false},
@@ -27,7 +27,7 @@ const RecetaSchema = new mongoose.Schema({
         type: Number,
         min: 1,
         max: 5,
-        default: 0
+        default: 1
     },
     comentarios: [{type: mongoose.Schema.Types.ObjectId, ref: 'Comentario'}]
 });

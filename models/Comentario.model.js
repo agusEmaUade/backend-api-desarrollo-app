@@ -10,7 +10,7 @@ const ComentarioSchema = new mongoose.Schema({
         min: 1,
         max: 5
     },
-    usuario: {type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true},
+    usuario: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
     receta: {type: mongoose.Schema.Types.ObjectId, ref: 'Receta', required: true},
     fechaCreacion: {type: Date, default: Date.now},
     aprobado: {type: Boolean, default: false}
