@@ -46,7 +46,7 @@ const createSendToken = (user, statusCode, res) => {
 
 exports.signup = async (req, res, next) => {
   try {
-    const { name, email, password, passwordConfirm } = req.body;
+    const { name, email, password, passwordConfirm, role } = req.body;
 
     // 1) Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -60,6 +60,7 @@ exports.signup = async (req, res, next) => {
       email,
       password,
       passwordConfirm,
+      role
     });
 
     // 3) Generate token and send response
