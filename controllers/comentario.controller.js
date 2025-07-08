@@ -37,7 +37,91 @@ const obtenerComentariosPorReceta = async (req, res) => {
     }
 };
 
+const obtenerComentariosPendientes = async (req, res) => {
+    try {
+        const page = req.query.page || 1;
+        const limit = req.query.limit || 10;
+        
+        const result = await comentarioService.obtenerComentariosPendientes(page, limit);
+        res.status(200).json({
+            status: 'success',
+            results: result.docs.length,
+            totalPages: result.totalPages,
+            currentPage: result.page,
+            totalResults: result.totalDocs,
+            data: {
+                comentarios: result.docs
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ 
+            status: 'error',
+            message: err.message 
+        });
+    }
+};
+
+const aprobarComentario = async (req, res) => {
+    try {
+        const comentarioId = req.params.id;
+        const comentario = await comentarioService.aprobarComentario(comentarioId);
+        
+        res.status(200).json({
+            status: 'success',
+            message: 'Comentario aprobado exitosamente',
+            data: {
+                comentario
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ 
+            status: 'error',
+            message: err.message 
+        });
+    }
+};
+
+const eliminarComentario = async (req, res) => {
+    try {
+        const comentarioId = req.params.id;
+        await comentarioService.eliminarComentario(comentarioId);
+        
+        res.status(200).json({
+            status: 'success',
+            message: 'Comentario eliminado exitosamente'
+        });
+    } catch (err) {
+        res.status(500).json({ 
+            status: 'error',
+            message: err.message 
+        });
+    }
+};
+
+const obtenerComentarioPorId = async (req, res) => {
+    try {
+        const comentarioId = req.params.id;
+        const comentario = await comentarioService.obtenerComentarioPorId(comentarioId);
+        
+        res.status(200).json({
+            status: 'success',
+            data: {
+                comentario
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ 
+            status: 'error',
+            message: err.message 
+        });
+    }
+};
+
 module.exports = {
     crearComentario,
-    obtenerComentariosPorReceta
+    obtenerComentariosPorReceta,
+    obtenerComentariosPendientes,
+    aprobarComentario,
+    eliminarComentario,
+    obtenerComentarioPorId
 };

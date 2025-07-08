@@ -52,4 +52,20 @@ const authenticateToken = async (req, res, next) => {
   }
 };
 
-module.exports = authenticateToken;
+const restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // roles is an array like ['admin', 'moderator']
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        status: 'fail',
+        message: 'No tienes permisos para realizar esta acción'
+      });
+    }
+    next();
+  };
+};
+
+module.exports = {
+  authenticateToken,
+  restrictTo
+};

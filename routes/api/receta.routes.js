@@ -3,7 +3,7 @@ const router = express.Router();
 const recetaController = require('../../controllers/receta.controller');
 const {check} = require('express-validator');
 const validateRequest = require('../../middleware/requestValidator');
-const authenticateToken = require('../../middleware/authMiddleware');
+const { authenticateToken, restrictTo } = require('../../middleware/authMiddleware');
 
 
 // Public routes
@@ -20,7 +20,7 @@ router.get('/tags/:tags', authenticateToken, recetaController.filtrarPorTags);
 router.get('/user/:usuarioId', authenticateToken, recetaController.filtrarPorUsuario);
 
 // Admin routes
-router.patch('/:id/approve', authenticateToken, recetaController.aprobarReceta);
+router.patch('/:id/approve', authenticateToken, restrictTo('admin'), recetaController.aprobarReceta);
 
 // Single recipe route (must be after other specific routes)
 router.get('/:id', authenticateToken, recetaController.obtenerRecetaPorId);
