@@ -212,11 +212,18 @@ const getFavorites = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).populate('favorites');
     
+    if (!user) {
+      return next(new AppError('User not found', 404));
+    }
+    
+    // Initialize favorites array if it doesn't exist
+    const favorites = user.favorites || [];
+    
     res.status(200).json({
       status: 'success',
-      results: user.favorites.length,
+      results: favorites.length,
       data: {
-        favorites: user.favorites,
+        favorites,
       },
     });
   } catch (err) {
@@ -235,8 +242,18 @@ const addFavorite = async (req, res, next) => {
       return next(new AppError('No recipe found with that ID', 404));
     }
     
-    // Check if already favorited
+    // Get user and check if already favorited
     const user = await User.findById(req.user.id);
+    if (!user) {
+      return next(new AppError('User not found', 404));
+    }
+    
+    // Initialize favorites array if it doesn't exist
+    if (!user.favorites) {
+      user.favorites = [];
+    }
+    
+    // Check if already favorited
     if (user.favorites.includes(recipeId)) {
       return next(new AppError('Recipe already in favorites', 400));
     }
@@ -259,15 +276,18 @@ const removeFavorite = async (req, res, next) => {
   try {
     const { recipeId } = req.params;
     
+    // Check if user exists first
+    const userExists = await User.findById(req.user.id);
+    if (!userExists) {
+      return next(new AppError('User not found', 404));
+    }
+    
+    // Remove from favorites
     const user = await User.findByIdAndUpdate(
       req.user.id,
       { $pull: { favorites: recipeId } },
       { new: true }
     );
-    
-    if (!user) {
-      return next(new AppError('No user found with that ID', 404));
-    }
     
     res.status(200).json({
       status: 'success',
