@@ -36,8 +36,10 @@ const RecetaSchema = new mongoose.Schema({
         }
     ],
     pasos: [{
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Paso'
+        type: String,
+        trim: true,
+        minlength: [10, 'Cada paso debe tener al menos 10 caracteres'],
+        maxlength: [500, 'Cada paso no puede exceder 500 caracteres']
     }],
     tiempoCoccion: {
         type: Number,

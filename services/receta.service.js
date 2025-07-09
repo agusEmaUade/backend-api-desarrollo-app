@@ -23,7 +23,7 @@ const obtenerRecetasPendientes = async () => {
 };
 
 const obtenerRecetaPorId = async (id) => {
-    return await Receta.findById(id).populate('autor').populate('comentarios').populate('pasos');
+    return await Receta.findById(id).populate('autor').populate('comentarios');
 };
 
 const actualizarReceta = async (id, data) => {
