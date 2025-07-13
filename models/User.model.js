@@ -86,6 +86,13 @@ const UserSchema = new mongoose.Schema(
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
+    // Campos para código de verificación
+    passwordResetCode: String,
+    passwordResetCodeExpires: Date,
+    isPasswordResetCodeVerified: {
+      type: Boolean,
+      default: false,
+    },
     favorites: [{
       type: mongoose.Schema.ObjectId,
       ref: 'Receta',
@@ -155,6 +162,23 @@ UserSchema.methods.createPasswordResetToken = function () {
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
   return resetToken;
+};
+
+// Método para generar código de verificación de 6 dígitos
+UserSchema.methods.createPasswordResetCode = function () {
+  // Generar código de 6 dígitos
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Guardar código hasheado en la BD
+  this.passwordResetCode = crypto
+    .createHash('sha256')
+    .update(resetCode)
+    .digest('hex');
+
+  this.passwordResetCodeExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  this.isPasswordResetCodeVerified = false;
+
+  return resetCode;
 };
 
 // Add pagination plugin
