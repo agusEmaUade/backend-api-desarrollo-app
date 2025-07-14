@@ -2,7 +2,7 @@ const nodemailer = require('nodemailer');
 
 // Función para crear el transportador de email
 const createTransporter = () => {
-    if (process.env.NODE_ENV === 'production') {
+   
         // Use SendGrid for production
         return nodemailer.createTransport({
             service: 'SendGrid',
@@ -11,18 +11,6 @@ const createTransporter = () => {
                 pass: process.env.SENDGRID_PASSWORD,
             },
         });
-    }
-
-    // Use SMTP for development (Gmail, Mailtrap, etc.)
-    return nodemailer.createTransport({
-        host: process.env.EMAIL_HOST,
-        port: process.env.EMAIL_PORT,
-        secure: false, // true for 465, false for other ports
-        auth: {
-            user: process.env.EMAIL_USERNAME,
-            pass: process.env.EMAIL_PASSWORD,
-        },
-    });
 };
 
 // Función principal para enviar emails
