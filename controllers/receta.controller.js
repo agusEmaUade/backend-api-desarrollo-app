@@ -73,34 +73,70 @@ const obtenerRecetaPorId = async (req, res) => {
 
 const actualizarReceta = async (req, res) => {
     try {
-        // Check if user is the author or admin
+        // 1. Find the recipe to ensure it exists
         const receta = await recetaService.obtenerRecetaPorId(req.params.id);
         if (!receta) {
-            return res.status(404).json({ 
+            return res.status(404).json({
                 status: 'fail',
-                message: 'Receta no encontrada' 
+                message: 'Receta no encontrada'
             });
         }
-        
-        // Only allow the author or admin to update
-        if (receta.autor._id.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+
+        // 2. Authorization: Check if the user is the author or an admin
+        const esAutor = receta.autor._id.toString() === req.user._id.toString();
+        const esAdmin = req.user.role === 'admin';
+
+        if (!esAutor && !esAdmin) {
             return res.status(403).json({
                 status: 'fail',
                 message: 'No tienes permisos para actualizar esta receta'
             });
         }
-        
-        const recetaActualizada = await recetaService.actualizarReceta(req.params.id, req.body);
+
+        // 3. Data Sanitization and Parsing from FormData
+        const updateData = { ...req.body };
+
+        // The frontend sends arrays as JSON strings, so we must parse them back
+        for (const key of ['ingredientes', 'pasos', 'tags']) {
+            if (updateData[key] && typeof updateData[key] === 'string') {
+                try {
+                    updateData[key] = JSON.parse(updateData[key]);
+                } catch (e) {
+                    return res.status(400).json({ status: 'fail', message: `El formato de ${key} es inválido.` });
+                }
+            }
+        }
+
+        // 4. Handle Image Upload (assuming you use a middleware like multer)
+        // If a new file was uploaded, req.file will exist. Update the image path.
+        if (req.file) {
+            // The path depends on your multer configuration.
+            // Example: '/uploads/images/recipes/your-image-name.jpg'
+            updateData.imagen = req.file.path;
+        }
+
+        // 5. Security: Prevent users from approving their own recipes.
+        updateData.aprobado = false;
+
+
+        // 6. Perform the update with the clean and parsed data
+        const recetaActualizada = await recetaService.actualizarReceta(req.params.id, updateData);
+
         res.status(200).json({
             status: 'success',
             data: {
                 receta: recetaActualizada
             }
         });
+
     } catch (err) {
-        res.status(500).json({ 
+        // Add more specific error handling for invalid IDs
+        if (err.name === 'CastError') {
+            return res.status(400).json({ status: 'fail', message: 'El ID de la receta no es válido.' });
+        }
+        res.status(500).json({
             status: 'error',
-            message: err.message 
+            message: err.message
         });
     }
 };

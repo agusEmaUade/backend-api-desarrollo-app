@@ -46,7 +46,7 @@ router.post('/', [
     validateRequest
 ], authenticateToken, recetaController.crearReceta);
 
-router.put('/:id', [
+router.patch('/:id', [
     check('titulo').optional().notEmpty().withMessage('El título no puede estar vacío'),
     check('descripcion').optional().notEmpty().withMessage('La descripción no puede estar vacía'),
     check('ingredientes').optional().isArray({min: 1}).withMessage('Debe haber al menos un ingrediente'),
@@ -63,7 +63,6 @@ router.put('/:id', [
     check('tags').optional().isArray().withMessage('Los tags deben ser un array'),
     check('tags.*').optional().isIn(['Vegetariano', 'Vegano', 'SinGluten', 'Dulce', 'Salado', 'Rapido', 'Internacional', 'Tradicional', 'Saludable', 'Economico']).withMessage('Tag inválido'),
     check('imagen').optional().isURL().withMessage('La imagen debe ser una URL válida'),
-    check('aprobado').optional().isBoolean().withMessage('Aprobado debe ser un valor booleano'),
     validateRequest
 ], authenticateToken, recetaController.actualizarReceta);
 
