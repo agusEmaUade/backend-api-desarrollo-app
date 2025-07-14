@@ -1,5 +1,5 @@
 var mongoose = require('mongoose')
-var mongoosePaginate = require('mongoose-paginate')
+var mongoosePaginate = require('mongoose-paginate-v2');
 const {ObjectId} = require("mongodb");
 
 const PasoSchema = new mongoose.Schema({

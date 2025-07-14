@@ -9,7 +9,7 @@ const pasoRoutes = require('../routes/api/paso.routes');
 const comentarioRoutes = require('../routes/api/comentario.routes');
 
 router.use('/user', userRoutes);
-router.use('/recetas', recetaRoutes);
+router.use('/recipes', recetaRoutes);
 router.use('/pasos', pasoRoutes);
 router.use('/comentarios', comentarioRoutes);
 

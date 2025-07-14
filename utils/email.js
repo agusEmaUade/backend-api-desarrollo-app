@@ -1,98 +1,72 @@
 const nodemailer = require('nodemailer');
-const pug = require('pug');
-const { convert } = require('html-to-text');
 
-module.exports = class Email {
-    constructor(user, url) {
-        this.to = user.email;
-        this.firstName = user.name.split(' ')[0];
-        this.url = url;
-        this.from = `Recipe App <${process.env.EMAIL_FROM}>`;
-    }
-
-    newTransport() {
-        if (process.env.NODE_ENV === 'production') {
-            // Use SendGrid for production
-            return nodemailer.createTransport({
-                service: 'SendGrid',
-                auth: {
-                    user: process.env.SENDGRID_USERNAME,
-                    pass: process.env.SENDGRID_PASSWORD,
-                },
-            });
-        }
-
-        // Use Mailtrap for development
+// Función para crear el transportador de email
+const createTransporter = () => {
+   
         return nodemailer.createTransport({
-            host: process.env.EMAIL_HOST,
-            port: process.env.EMAIL_PORT,
-            auth: {
-                user: process.env.EMAIL_USERNAME,
-                pass: process.env.EMAIL_PASSWORD,
-            },
-        });
-    }
-
-    // Send the actual email
-    async send(template, subject) {
-        // 1) Render HTML based on a pug template
-        const html = pug.renderFile(
-            `${__dirname}/../views/emails/${template}.pug`,
-            {
-                firstName: this.firstName,
-                url: this.url,
-                subject,
-            }
-        );
-
-        // 2) Define email options
-        const mailOptions = {
-            from: this.from,
-            to: this.to,
-            subject,
-            html,
-            text: convert(html),
-        };
-
-        // 3) Create a transport and send email
-        await this.newTransport().sendMail(mailOptions);
-    }
-
-    async sendWelcome() {
-        await this.send('welcome', 'Welcome to the Recipe App Family!');
-    }
-
-    async sendPasswordReset() {
-        await this.send(
-            'passwordReset',
-            'Your password reset token (valid for only 10 minutes)'
-        );
-    }
-};
-
-// Simple email sending function for basic needs
-const sendEmail = async (options) => {
-    // 1) Create a transporter
-    const transporter = nodemailer.createTransport({
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
+        secure: false, // true for 465, false for other ports
         auth: {
             user: process.env.EMAIL_USERNAME,
             pass: process.env.EMAIL_PASSWORD,
         },
     });
-
-    // 2) Define the email options
-    const mailOptions = {
-        from: 'Recipe App <hello@recipeapp.com>',
-        to: options.email,
-        subject: options.subject,
-        text: options.message,
-        // html:
-    };
-
-    // 3) Actually send the email
-    await transporter.sendMail(mailOptions);
 };
 
-module.exports = sendEmail;
+// Función principal para enviar emails
+const sendEmail = async (options) => {
+    try {
+        // 1) Validar que las opciones requeridas estén presentes
+        if (!options.email || !options.subject || !options.message) {
+            throw new Error('Email, subject and message are required');
+        }
+
+        // 2) Crear el transportador
+        const transporter = createTransporter();
+
+        // 3) Definir las opciones del email
+        const mailOptions = {
+            from: process.env.EMAIL_FROM || 'Recipe App <noreply@recipeapp.com>',
+            to: options.email,
+            subject: options.subject,
+            text: options.message,
+            html: options.html || undefined, // Optional HTML content
+        };
+
+        // 4) Enviar el email
+        const info = await transporter.sendMail(mailOptions);
+        
+        console.log('Email sent successfully:', info.messageId);
+        return info;
+
+    } catch (error) {
+        console.error('Error sending email:', error);
+        throw new Error(`Failed to send email: ${error.message}`);
+    }
+};
+
+// Función específica para enviar código de verificación
+const sendPasswordResetCode = async (email, code, firstName = '') => {
+    const message = `Hola ${firstName},
+
+Tu código de verificación para restablecer la contraseña es: ${code}
+
+Este código es válido por 10 minutos.
+
+Si no solicitaste restablecer tu contraseña, ignora este email.
+
+Saludos,
+El equipo de Recipe App`;
+
+    return await sendEmail({
+        email: email,
+        subject: 'Código de verificación para restablecer contraseña',
+        message: message,
+    });
+};
+
+module.exports = {
+    sendEmail,
+    sendPasswordResetCode,
+};

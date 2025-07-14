@@ -1,51 +1,71 @@
-const Usuario = require('../models/User.model');
+const User = require('../models/User.model');
 
-const getUsers = async () =>
-    await Usuario.findAll();
 
-const getUserById = async (id) =>
-    await Usuario.findByPk(id);
+const getUsers = async () => {
+   return await User.find().select('-password');
+};
 
-const getUserByEmail = async (email) =>
-    await Usuario.findOne({ where: { email } });
 
-const createUser = async (user) => await Usuario.create(user);
+const getUserById = async (id) => {
+   return await User.findById(id).select('-password');
+};
 
-const getUserByEmailAndPassword = async (email, password) =>
-    await Usuario.findOne({
-        where: { email, password },
-    });
+
+const getUserByEmail = async (email) => {
+   return await User.findOne({ email }).select('-password');
+};
+
+
+const createUser = async (userData) => {
+   return await User.create(userData);
+};
+
+
+const getUserByEmailAndPassword = async (email, password) => {
+   return await User.findOne({ email }).select('+password');
+};
+
 
 const updateUser = async (id, updatedFields) => {
-    return await Usuario.update(updatedFields, {
-        where: { id },
-    });
+   return await User.findByIdAndUpdate(
+       id,
+       updatedFields,
+       { new: true, runValidators: true }
+   ).select('-password');
 };
+
 
 const updateUserByEmail = async (email, updatedFields) => {
-    // Asegúrate de que solo actualizas los campos necesarios
-    try {
-        console.log(email);
-        const [affectedRows] = await Usuario.update(updatedFields, {
-            where: { email }
-        });
-        if (affectedRows === 0) {
-            console.log("falle");
-            throw new Error('No user found with the provided email.');
-        }
-        console.log("termine bien: " + affectedRows);
-        return affectedRows;
-    } catch (error) {
-        throw new Error(error.message);
-    }
+   try {
+       const updatedUser = await User.findOneAndUpdate(
+           { email },
+           updatedFields,
+           { new: true, runValidators: true }
+       ).select('-password');
+      
+       if (!updatedUser) {
+           throw new Error('No user found with the provided email.');
+       }
+      
+       return updatedUser;
+   } catch (error) {
+       throw new Error(error.message);
+   }
 };
 
+
+const deleteUser = async (id) => {
+   return await User.findByIdAndDelete(id);
+};
+
+
 module.exports = {
-    getUsers,
-    getUserById,
-    createUser,
-    getUserByEmailAndPassword,
-    updateUser,
-    getUserByEmail,
-    updateUserByEmail
+   getUsers,
+   getUserById,
+   createUser,
+   getUserByEmailAndPassword,
+   updateUser,
+   getUserByEmail,
+   updateUserByEmail,
+   deleteUser
 };

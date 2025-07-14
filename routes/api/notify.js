@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const NotifyController = require('../../controllers/notify');
 const multer = require('multer');
-const authenticateToken = require('../../auth/authorization');
+const { authenticateToken } = require('../../middleware/authMiddleware');
 
 const router = Router();
 

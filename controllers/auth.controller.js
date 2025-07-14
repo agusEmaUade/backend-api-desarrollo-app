@@ -3,7 +3,7 @@ const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User.model');
 const AppError = require('../utils/AppError');
-const sendEmail = require('../utils/email');
+const { sendEmail, sendPasswordResetCode } = require('../utils/email');
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -15,17 +15,18 @@ const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const refreshToken = jwt.sign(
     { id: user._id },
-    process.env.JWT_REFRESH_SECRET,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRES_IN }
+    process.env.JWT_SECRET,
+    { expiresIn: process.env.JWT_EXPIRES_IN }
   );
 
   // Remove password from output
   user.password = undefined;
 
   // Set cookie options
+  const cookieExpiresInDays = Number(process.env.JWT_COOKIE_EXPIRES_IN);
   const cookieOptions = {
     expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+      Date.now() + cookieExpiresInDays * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -45,7 +46,7 @@ const createSendToken = (user, statusCode, res) => {
 
 exports.signup = async (req, res, next) => {
   try {
-    const { name, email, password, passwordConfirm } = req.body;
+    const { name, apellido, email, fechaNacimiento, nacionalidad, password, passwordConfirm, role } = req.body;
 
     // 1) Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -56,9 +57,13 @@ exports.signup = async (req, res, next) => {
     // 2) Create new user
     const newUser = await User.create({
       name,
+      apellido,
       email,
+      fechaNacimiento,
+      nacionalidad,
       password,
       passwordConfirm,
+      role
     });
 
     // 3) Generate token and send response
@@ -102,7 +107,7 @@ exports.refreshToken = async (req, res, next) => {
     // 2) Verify refresh token
     const decoded = await promisify(jwt.verify)(
       refreshToken,
-      process.env.JWT_REFRESH_SECRET
+      process.env.JWT_SECRET
     );
 
     // 3) Check if user still exists
@@ -200,36 +205,27 @@ exports.forgotPassword = async (req, res, next) => {
       return next(new AppError('There is no user with that email address.', 404));
     }
 
-    // 2) Generate the random reset token
-    const resetToken = user.createPasswordResetToken();
+    // 2) Generate the random 6-digit verification code
+    const resetCode = user.createPasswordResetCode();
     await user.save({ validateBeforeSave: false });
 
-    // 3) Send it to user's email
-    const resetURL = `${req.protocol}://${req.get(
-      'host'
-    )}/api/v1/users/resetPassword/${resetToken}`;
-
-    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
-
+    // 3) Send verification code to user's email
     try {
-      await sendEmail({
-        email: user.email,
-        subject: 'Your password reset token (valid for 10 min)',
-        message,
-      });
+      await sendPasswordResetCode(user.email, resetCode, user.name);
 
       res.status(200).json({
         status: 'success',
-        message: 'Token sent to email!',
+        message: 'Código de verificación enviado al email!',
       });
     } catch (err) {
-      user.passwordResetToken = undefined;
-      user.passwordResetExpires = undefined;
+      user.passwordResetCode = undefined;
+      user.passwordResetCodeExpires = undefined;
+      user.isPasswordResetCodeVerified = false;
       await user.save({ validateBeforeSave: false });
 
       return next(
         new AppError(
-          'There was an error sending the email. Try again later!',
+          'Hubo un error enviando el email. Inténtalo más tarde!',
           500
         )
       );
@@ -239,32 +235,83 @@ exports.forgotPassword = async (req, res, next) => {
   }
 };
 
-exports.resetPassword = async (req, res, next) => {
+exports.verifyResetCode = async (req, res, next) => {
   try {
-    // 1) Get user based on the token
-    const hashedToken = crypto
-      .createHash('sha256')
-      .update(req.params.token)
-      .digest('hex');
+    const { email, code } = req.body;
 
-    const user = await User.findOne({
-      passwordResetToken: hashedToken,
-      passwordResetExpires: { $gt: Date.now() },
-    });
-
-    // 2) If token has not expired, and there is user, set the new password
-    if (!user) {
-      return next(new AppError('Token is invalid or has expired', 400));
+    // 1) Check if email and code are provided
+    if (!email || !code) {
+      return next(new AppError('Please provide email and verification code', 400));
     }
 
-    user.password = req.body.password;
-    user.passwordConfirm = req.body.passwordConfirm;
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
+    // 2) Hash the provided code
+    const hashedCode = crypto
+      .createHash('sha256')
+      .update(code)
+      .digest('hex');
+
+    // 3) Find user with matching email and code
+    const user = await User.findOne({
+      email: email,
+      passwordResetCode: hashedCode,
+      passwordResetCodeExpires: { $gt: Date.now() },
+    });
+
+    // 4) If code is invalid or expired
+    if (!user) {
+      return next(new AppError('Código de verificación inválido o expirado', 400));
+    }
+
+    // 5) Mark code as verified
+    user.isPasswordResetCodeVerified = true;
+    await user.save({ validateBeforeSave: false });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Código de verificación válido. Puedes proceder a cambiar tu contraseña.',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { email, code, password, passwordConfirm } = req.body;
+
+    // 1) Check if required fields are provided
+    if (!email || !code || !password || !passwordConfirm) {
+      return next(new AppError('Please provide email, code, password and passwordConfirm', 400));
+    }
+
+    // 2) Hash the provided code
+    const hashedCode = crypto
+      .createHash('sha256')
+      .update(code)
+      .digest('hex');
+
+    // 3) Find user with matching email, code, and verified status
+    const user = await User.findOne({
+      email: email,
+      passwordResetCode: hashedCode,
+      passwordResetCodeExpires: { $gt: Date.now() },
+      isPasswordResetCodeVerified: true,
+    });
+
+    // 4) If code is invalid, expired, or not verified
+    if (!user) {
+      return next(new AppError('Código de verificación inválido, expirado o no verificado', 400));
+    }
+
+    // 5) Set the new password
+    user.password = password;
+    user.passwordConfirm = passwordConfirm;
+    user.passwordResetCode = undefined;
+    user.passwordResetCodeExpires = undefined;
+    user.isPasswordResetCodeVerified = false;
     await user.save();
 
-    // 3) Update changedPasswordAt property for the user
-    // 4) Log the user in, send JWT
+    // 6) Log the user in, send JWT
     createSendToken(user, 200, res);
   } catch (err) {
     next(err);

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mongoosePaginate = require('mongoose-paginate');
+const mongoosePaginate = require('mongoose-paginate-v2');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 
@@ -8,6 +8,11 @@ const UserSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, 'Please tell us your name!'],
+      trim: true,
+    },
+    apellido: {
+      type: String,
+      required: [true, 'Please tell us your last name!'],
       trim: true,
     },
     email: {
@@ -20,6 +25,33 @@ const UserSchema = new mongoose.Schema(
         /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
         'Please provide a valid email',
       ],
+    },
+    fechaNacimiento: {
+      type: Date,
+      required: [true, 'Please provide your birth date'],
+      validate: {
+        validator: function(date) {
+          // Validar que la fecha no sea en el futuro y que la persona tenga al menos 13 años
+          const today = new Date();
+          const birthDate = new Date(date);
+          const age = today.getFullYear() - birthDate.getFullYear();
+          const monthDiff = today.getMonth() - birthDate.getMonth();
+          
+          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+          }
+          
+          return birthDate <= today && age >= 13;
+        },
+        message: 'Birth date must be valid and you must be at least 13 years old'
+      }
+    },
+    nacionalidad: {
+      type: String,
+      required: [true, 'Please provide your nationality'],
+      trim: true,
+      minlength: [2, 'Nationality must be at least 2 characters long'],
+      maxlength: [50, 'Nationality cannot exceed 50 characters']
     },
     password: {
       type: String,
@@ -54,6 +86,17 @@ const UserSchema = new mongoose.Schema(
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
+    // Campos para código de verificación
+    passwordResetCode: String,
+    passwordResetCodeExpires: Date,
+    isPasswordResetCodeVerified: {
+      type: Boolean,
+      default: false,
+    },
+    favorites: [{
+      type: mongoose.Schema.ObjectId,
+      ref: 'Receta',
+    }],
   },
   {
     timestamps: true,
@@ -119,6 +162,23 @@ UserSchema.methods.createPasswordResetToken = function () {
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
   return resetToken;
+};
+
+// Método para generar código de verificación de 6 dígitos
+UserSchema.methods.createPasswordResetCode = function () {
+  // Generar código de 6 dígitos
+  const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Guardar código hasheado en la BD
+  this.passwordResetCode = crypto
+    .createHash('sha256')
+    .update(resetCode)
+    .digest('hex');
+
+  this.passwordResetCodeExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  this.isPasswordResetCodeVerified = false;
+
+  return resetCode;
 };
 
 // Add pagination plugin
