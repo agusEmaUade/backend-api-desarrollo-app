@@ -35,6 +35,27 @@ router.post('/auth/forgot-password', [
     validateRequest
 ], authController.forgotPassword);
 
+router.post('/auth/verify-reset-code', [
+   check('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
+   check('code').isLength({min: 6, max: 6}).withMessage('Verification code must be 6 digits'),
+   validateRequest
+], authController.verifyResetCode);
+
+
+router.post('/auth/reset-password', [
+   check('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
+   check('code').isLength({min: 6, max: 6}).withMessage('Verification code must be 6 digits'),
+   check('password').isLength({min: 8}).withMessage('Password must be at least 8 characters long'),
+   check('passwordConfirm').custom((value, {req}) => {
+       if (value !== req.body.password) {
+           throw new Error('Password confirmation does not match password');
+       }
+       return true;
+   }),
+   validateRequest
+], authController.resetPassword);
+
+
 router.patch('/auth/reset-password/:token', [
     check('password').isLength({min: 8}).withMessage('Password must be at least 8 characters long'),
     check('passwordConfirm').custom((value, {req}) => {
