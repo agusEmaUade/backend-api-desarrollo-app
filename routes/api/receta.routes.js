@@ -63,7 +63,7 @@ router.patch('/:id', [
     check('tags').optional().isArray().withMessage('Los tags deben ser un array'),
     check('tags.*').optional().isIn(['Vegetariano', 'Vegano', 'SinGluten', 'Dulce', 'Salado', 'Rapido', 'Internacional', 'Tradicional', 'Saludable', 'Economico']).withMessage('Tag inválido'),
     check('imagen').optional().isURL().withMessage('La imagen debe ser una URL válida'),
-    validateRequest
+    //validateRequest
 ], authenticateToken, recetaController.actualizarReceta);
 
 router.delete('/:id', authenticateToken, recetaController.eliminarReceta);
